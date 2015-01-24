@@ -1,0 +1,343 @@
+%C_Grammar_vol_1
+translation_unit
+	: external_declaration
+	| translation_unit external_declaration
+	;
+
+primary_expression
+	: IDENT
+	| INT_CONST
+	| FLOAT_CONST
+	| STRING_LITERAL
+	| FUNC_ARG_LEFT expression FUNC_ARG_RIGHT
+	;
+
+postfix_expression
+	: primary_expression
+	| postfix_expression PTR_MASS_LEFT expression PTR_MASS_RIGHT
+	| postfix_expression FUNC_ARG_LEFT FUNC_ARG_RIGHT
+	| postfix_expression FUNC_ARG_LEFT argument_expression_list FUNC_ARG_RIGHT
+	| postfix_expression POINT IDENT
+	| postfix_expression PTR_LINK IDENT
+	| postfix_expression INC
+	| postfix_expression DEC
+	;
+
+argument_expression_list
+	: assignment_expression
+	| argument_expression_list COMMA assignment_expression
+	;
+
+unary_expression
+	: postfix_expression
+	| INC unary_expression
+	| DEC unary_expression
+	| unary_operator cast_expression
+	;
+
+unary_operator
+	: OP_AND
+	| OP_MUL
+	| OP_ADD
+	| OP_SUB
+	| OP_NOT
+	;
+
+cast_expression
+	: unary_expression
+	| FUNC_ARG_LEFT type_name FUNC_ARG_RIGHT cast_expression
+	;
+
+multiplicative_expression
+	: cast_expression
+	| multiplicative_expression OP_MUL cast_expression
+	| multiplicative_expression OP_DIV cast_expression
+	| multiplicative_expression OP_PROCENT cast_expression
+	;
+
+additive_expression
+	: multiplicative_expression
+	| additive_expression OP_ADD multiplicative_expression
+	| additive_expression OP_SUB multiplicative_expression
+	;
+
+shift_expression
+	: additive_expression
+	| shift_expression OP_LEFT additive_expression
+	| shift_expression OP_RIGHT additive_expression
+	;
+
+relational_expression
+	: shift_expression
+	| relational_expression LOGIC_S shift_expression
+	| relational_expression LOGIC_L shift_expression
+	| relational_expression LOGIC_NOT_L shift_expression
+	| relational_expression LOGIC_NOT_S shift_expression
+	;
+
+equality_expression
+	: relational_expression
+	| equality_expression LOGIC_EQ relational_expression
+	| equality_expression LOGIC_NOT_EQ relational_expression
+	;
+
+and_expression
+	: equality_expression
+	| and_expression OP_AND equality_expression
+	;
+
+exclusive_or_expression
+	: and_expression
+	| exclusive_or_expression OP_XOR and_expression
+	;
+
+inclusive_or_expression
+	: exclusive_or_expression
+	| inclusive_or_expression OP_OR exclusive_or_expression
+	;
+
+logical_and_expression
+	: inclusive_or_expression
+	| logical_and_expression LOGIC_AND inclusive_or_expression
+	;
+
+logical_or_expression
+	: logical_and_expression
+	| logical_or_expression LOGIC_OR logical_and_expression
+	;
+
+conditional_expression
+	: logical_or_expression
+	;
+
+assignment_expression
+	: conditional_expression
+	| unary_expression assignment_operator assignment_expression
+	;
+
+assignment_operator
+	: ASSIGN
+	| ASSIGN_MUL
+	| ASSIGN_DIV
+	| ASSIGN_PROCENT
+	| ASSIGN_ADD
+	| ASSIGN_SUB
+	| ASSIGN_LEFT
+	| ASSIGN_RIGHT
+	| ASSIGN_AND
+	| ASSIGN_XOR
+	| ASSIGN_OR
+	;
+
+expression
+	: assignment_expression
+	| expression COMMA assignment_expression
+	;
+
+constant_expression
+	: conditional_expression
+	;
+
+declaration
+	: declaration_specifiers SEMICOLON
+	| declaration_specifiers init_declarator_list SEMICOLON
+	;
+
+declaration_specifiers
+	: type_specifier
+	| type_specifier declaration_specifiers
+	| type_qualifier
+	| type_qualifier declaration_specifiers
+	;
+
+init_declarator_list
+	: init_declarator
+	| init_declarator_list COMMA init_declarator
+	;
+
+init_declarator
+	: declarator
+	| declarator ASSIGN initializer
+	;
+
+
+type_specifier
+	: VOID
+	| CHAR
+	| BYTE
+	| SHORT
+	| INT
+	| LONG
+	| FLOAT
+	| DOUBLE
+	| SIGNED
+	| UNSIGNED
+	;
+
+specifier_qualifier_list
+	: type_specifier specifier_qualifier_list
+	| type_specifier
+	| type_qualifier specifier_qualifier_list
+	| type_qualifier
+	;
+
+
+type_qualifier
+	: CONST
+	;
+
+declarator
+	: pointer direct_declarator
+	| direct_declarator
+	;
+
+direct_declarator
+	: IDENT
+	| FUNC_ARG_LEFT declarator FUNC_ARG_RIGHT
+	| direct_declarator PTR_MASS_LEFT constant_expression PTR_MASS_RIGHT
+	| direct_declarator PTR_MASS_LEFT PTR_MASS_RIGHT
+	| direct_declarator FUNC_ARG_LEFT parameter_type_list FUNC_ARG_RIGHT
+	| direct_declarator FUNC_ARG_LEFT identifier_list FUNC_ARG_RIGHT
+	| direct_declarator FUNC_ARG_LEFT FUNC_ARG_RIGHT
+	;
+
+pointer
+	: OP_MUL
+	| OP_MUL type_qualifier_list
+	| OP_MUL pointer
+	| OP_MUL type_qualifier_list pointer
+	;
+
+type_qualifier_list
+	: type_qualifier
+	| type_qualifier_list type_qualifier
+	;
+
+
+parameter_type_list
+	: parameter_list
+	;
+
+parameter_list
+	: parameter_declaration
+	| parameter_list COMMA parameter_declaration
+	;
+
+parameter_declaration
+	: declaration_specifiers declarator
+	| declaration_specifiers abstract_declarator
+	| declaration_specifiers
+	;
+
+identifier_list
+	: IDENT
+	| identifier_list COMMA IDENT
+	;
+
+type_name
+	: specifier_qualifier_list
+	| specifier_qualifier_list abstract_declarator
+	;
+
+abstract_declarator
+	: pointer
+	| direct_abstract_declarator
+	| pointer direct_abstract_declarator
+	;
+
+direct_abstract_declarator
+	: FUNC_ARG_LEFT abstract_declarator FUNC_ARG_RIGHT
+	| PTR_MASS_LEFT PTR_MASS_RIGHT
+	| PTR_MASS_LEFT constant_expression PTR_MASS_RIGHT
+	| direct_abstract_declarator PTR_MASS_LEFT PTR_MASS_RIGHT
+	| direct_abstract_declarator PTR_MASS_LEFT constant_expression PTR_MASS_RIGHT
+	| FUNC_ARG_LEFT FUNC_ARG_RIGHT
+	| FUNC_ARG_LEFT parameter_type_list FUNC_ARG_RIGHT
+	| direct_abstract_declarator FUNC_ARG_LEFT FUNC_ARG_RIGHT
+	| direct_abstract_declarator FUNC_ARG_LEFT parameter_type_list FUNC_ARG_RIGHT
+	;
+
+initializer
+	: assignment_expression
+	| BLOCK_LEFT initializer_list BLOCK_RIGHT
+	| BLOCK_LEFT initializer_list COMMA BLOCK_RIGHT
+	;
+
+initializer_list
+	: initializer
+	| initializer_list COMMA initializer
+	;
+
+statement
+	: matched_statement
+	| open_statement
+	;
+
+matched_statement
+	: IF FUNC_ARG_LEFT expression FUNC_ARG_RIGHT matched_statement ELSE matched_statement
+	| labeled_statement
+	| compound_statement
+	| expression_statement
+	| iteration_statement
+	| jump_statement
+	| SWITCH FUNC_ARG_LEFT expression FUNC_ARG_RIGHT statement
+	;
+
+open_statement
+	: IF FUNC_ARG_LEFT expression FUNC_ARG_RIGHT statement
+	| IF FUNC_ARG_LEFT expression FUNC_ARG_RIGHT matched_statement ELSE open_statement
+	;
+
+labeled_statement
+	: IDENT DOUBLE_POINT statement
+	| CASE constant_expression DOUBLE_POINT statement
+	| DEFAULT DOUBLE_POINT statement
+	;
+
+compound_statement
+	: BLOCK_LEFT BLOCK_RIGHT
+	| BLOCK_LEFT statement_list BLOCK_RIGHT
+	| BLOCK_LEFT declaration_list BLOCK_RIGHT
+	| BLOCK_LEFT declaration_list statement_list BLOCK_RIGHT
+	;
+
+declaration_list
+	: declaration
+	| declaration_list declaration
+	;
+
+statement_list
+	: statement
+	| statement_list statement
+	;
+
+expression_statement
+	: SEMICOLON
+	| expression SEMICOLON
+	;
+
+iteration_statement
+	: WHILE FUNC_ARG_LEFT expression FUNC_ARG_RIGHT statement
+	| DO statement WHILE FUNC_ARG_LEFT expression FUNC_ARG_RIGHT SEMICOLON
+	| FOR FUNC_ARG_LEFT expression_statement expression_statement FUNC_ARG_RIGHT statement
+	| FOR FUNC_ARG_LEFT expression_statement expression_statement expression FUNC_ARG_RIGHT statement
+	;
+
+jump_statement
+	: CONTINUE SEMICOLON
+	| BREAK SEMICOLON
+	| RETURN SEMICOLON
+	| RETURN expression SEMICOLON
+	;
+
+external_declaration
+	: function_definition
+	| declaration
+	;
+
+function_definition
+	: declaration_specifiers declarator declaration_list compound_statement
+	| declaration_specifiers declarator compound_statement
+	| declarator declaration_list compound_statement
+	| declarator compound_statement
+	;
