@@ -27,7 +27,7 @@ namespace NS_Compiler
 
         public bool CompileIt()
         {
-            string srcCode = File.ReadAllText(opts.SrcFile);
+            string srcCode = File.ReadAllText(COptions.SrcFile);
 
             var lexer = new Lexer(opts, this);
             var parser = new Parser();

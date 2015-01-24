@@ -1007,7 +1007,7 @@ namespace NS_C_Frontend
             dictionaryForDigits.Add('+', 0);
             dictionaryForDigits.Add('-', 0);
 
-            this.program = File.ReadAllText(opts.SrcFile);
+            this.program = File.ReadAllText(COptions.SrcFile);
         }
 
         public IEnumerable<Token> Tokens()
@@ -1019,7 +1019,7 @@ namespace NS_C_Frontend
                 Coords = new Fragment() { Start = cursor }
             };
 
-            if (opts.DumpLexer)
+            if (COptions.DumpLexer)
             {
                 Console.WriteLine(Compiler.PHASE_SEPARATOR);
                 Console.WriteLine(t.ToString());
@@ -1029,7 +1029,7 @@ namespace NS_C_Frontend
             while (t.Tag != Lexem.END)
             {
                 t = scan(cursor);
-                if (opts.DumpLexer)
+                if (COptions.DumpLexer)
                     Console.WriteLine(t.ToString());
                 yield return t;
             }

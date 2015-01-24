@@ -54,9 +54,12 @@ namespace NS_Hyperon
     /// basic abstract class
     /// Любой элемент представления принадлежит классу HTree
     /// </summary>
-    abstract class HTree 
+    public abstract class HTree 
     {
-        abstract public void AcceptVisitor(CTreeVisitor v);
+        // abstract public void AcceptVisitor(CTreeVisitor v);
+
+        public virtual void AcceptVisitor(CTreeVisitor v)
+        { }
     }
 
     #region Data types
@@ -64,7 +67,7 @@ namespace NS_Hyperon
     /// <summary>
     /// basic data type class
     /// </summary>
-    abstract class HType : HTree
+    public abstract class HType : HTree
     {
         public HType(int _size)
         {
@@ -82,7 +85,7 @@ namespace NS_Hyperon
         protected int _size;
     }
 
-    class HVoidType : HType
+    public class HVoidType : HType
     {
         static public void Init()
         {
@@ -107,7 +110,7 @@ namespace NS_Hyperon
         static private HVoidType _voidType = null;
     }
 
-    class HIntegerType : HType 
+    public class HIntegerType : HType 
     {
         static public void Init()
         {
@@ -207,7 +210,7 @@ namespace NS_Hyperon
         static private HIntegerType _uInt128 = null;
     }
 
-    class HFloatType : HType 
+    public class HFloatType : HType 
     {
         static public HFloatType Float32
         {
@@ -244,7 +247,7 @@ namespace NS_Hyperon
         static private HFloatType _float80;
     }
 
-    class HStructType : HType 
+    public class HStructType : HType 
     {
 
         public HStructType()
@@ -294,7 +297,7 @@ namespace NS_Hyperon
         private List<HField> _fields;
     }
 
-    class HComplexType : HType 
+    public class HComplexType : HType 
     {
         static public void Init()
         {
@@ -358,7 +361,7 @@ namespace NS_Hyperon
         static private HComplexType _complexType80 = null;
     }
 
-    class HBooleanType : HType 
+    public class HBooleanType : HType 
     {
         static public void Init()
         {
@@ -379,7 +382,7 @@ namespace NS_Hyperon
         static private HBooleanType _booleanType = null;
     }
 
-    class HPointerType : HType
+    public class HPointerType : HType
     {
         public HPointerType(HType _baseType)
             : base(CArch.PointerSize)
@@ -395,12 +398,13 @@ namespace NS_Hyperon
         private HType _baseType;
     }
 
-    class HArrayType : HType 
+    public class HArrayType : HType 
     {
         public HArrayType(HType _baseType, int _itemNum)
-            : base(_itemNum)
+            : base(0)
         {
             this._baseType = _baseType;
+            this._itemNum = _itemNum;
         }
 
         public HType BaseType
@@ -432,7 +436,7 @@ namespace NS_Hyperon
         private int _itemNum;
     }
 
-    class HFunType : HType
+    public class HFunType : HType
     {
         public HFunType(HType _resType, HType [] _paramTypes)
            : base(0)
@@ -458,7 +462,7 @@ namespace NS_Hyperon
     #endregion
 
     // label
-    class HLabel : HTree 
+    public class HLabel : HTree 
     {
         public string Name
         {
@@ -473,7 +477,7 @@ namespace NS_Hyperon
     #region Expressions
 
     // expressions
-    abstract class HExpr : HTree
+    public abstract class HExpr : HTree
     {
         public abstract HType Type { get; }
     }
@@ -484,9 +488,9 @@ namespace NS_Hyperon
     /// <summary>
     /// В данном 
     /// </summary>
-    abstract class HNmo : HExpr
+    public abstract class HNmo : HExpr
     {
-        public HType Type
+        public override HType Type
         {
             get { return _type; }
         }
@@ -502,7 +506,7 @@ namespace NS_Hyperon
         protected HMemDscr _memDscr;
     }
 
-    class HVarNmo : HNmo
+    public class HVarNmo : HNmo
     {
         public HVarNmo(HType _type, HMemDscr _memDscr)
         {
@@ -523,7 +527,7 @@ namespace NS_Hyperon
         }
     }
 
-    class HParamNmo : HNmo
+    public class HParamNmo : HNmo
     {
         public HParamNmo(HType _type, HMemDscr _memDscr, HFunNmo _funNmo)
         {
@@ -547,7 +551,7 @@ namespace NS_Hyperon
         private HFunNmo _funNmo;
     }
 
-    class HFunNmo : HNmo
+    public class HFunNmo : HNmo
     {
         public HFunNmo(HFunType _funType)
         {
@@ -573,7 +577,7 @@ namespace NS_Hyperon
     #region Expressions / constants
 
     // constants
-    abstract class HConstExpr : HExpr
+    public abstract class HConstExpr : HExpr
     {
         public override HType Type
         {
@@ -589,7 +593,7 @@ namespace NS_Hyperon
         protected object _value;
     }
 
-    class HIntegerCstExpr : HConstExpr
+    public class HIntegerCstExpr : HConstExpr
     {
         public HIntegerCstExpr(sbyte _value)
         {
@@ -645,7 +649,7 @@ namespace NS_Hyperon
         }
     }
 
-    class HFloatCstExpr : HConstExpr 
+    public class HFloatCstExpr : HConstExpr 
     {
         public HFloatCstExpr(float _value)
         {
@@ -665,9 +669,9 @@ namespace NS_Hyperon
         }
     }
 
-    class HComplexCstExpr : HConstExpr
+    public class HComplexCstExpr : HConstExpr
     {
-        struct HComplexValue
+        public struct HComplexValue
         {
             public object Re;
             public object Im;
@@ -690,7 +694,7 @@ namespace NS_Hyperon
     #region Expressions / Assigns
 
     // more complex expressions
-    class HAssignExpr : HExpr, IInstruction
+    public class HAssignExpr : HExpr, IInstruction
     {
         public HAssignExpr(HExpr _res, HExpr _right)
         {
@@ -736,7 +740,7 @@ namespace NS_Hyperon
     #region Expressions / unary expressions
 
     // unary expressions
-    abstract class HUnaryExpr : HExpr
+    public abstract class HUnaryExpr : HExpr
     {
         public HUnaryExpr(HExpr _operand)
         {
@@ -754,7 +758,7 @@ namespace NS_Hyperon
         protected HExpr _operand;
     }
 
-    class HSizeOfExpr : HUnaryExpr
+    public class HSizeOfExpr : HUnaryExpr
     { 
         public HSizeOfExpr(HExpr _op)
             : base(_op)
@@ -791,7 +795,7 @@ namespace NS_Hyperon
         private HType _toBeMeasured;
     }
 
-    class HNegateExpr : HUnaryExpr 
+    public class HNegateExpr : HUnaryExpr 
     {
         public HNegateExpr(HExpr _op)
             : base(_op)
@@ -812,7 +816,7 @@ namespace NS_Hyperon
         } 
     }
 
-    class HBitNotExpr : HUnaryExpr 
+    public class HBitNotExpr : HUnaryExpr 
     {
         public HBitNotExpr(HExpr _op)
             : base(_op)
@@ -833,7 +837,7 @@ namespace NS_Hyperon
         } 
     }
 
-    class HBoolNotExpr : HUnaryExpr 
+    public class HBoolNotExpr : HUnaryExpr 
     { 
         public HBoolNotExpr(HExpr _op)
             : base(_op)
@@ -854,7 +858,7 @@ namespace NS_Hyperon
         } 
     }
 
-    class HStepExpr : HUnaryExpr 
+    public class HStepExpr : HUnaryExpr 
     {
         public enum EOpKind
         {
@@ -892,7 +896,7 @@ namespace NS_Hyperon
         private EOpKind _kind;
     }
 
-    class HComplexConjExpr : HUnaryExpr 
+    public class HComplexConjExpr : HUnaryExpr 
     {
         public HComplexConjExpr(HExpr _op)
             : base(_op)
@@ -913,7 +917,7 @@ namespace NS_Hyperon
         } 
     }
 
-    class HComplexReExpr : HUnaryExpr 
+    public class HComplexReExpr : HUnaryExpr 
     { 
         public HComplexReExpr(HExpr _op)
             : base(_op)
@@ -935,7 +939,7 @@ namespace NS_Hyperon
         }
     }
 
-    class HComplexImExpr : HUnaryExpr 
+    public class HComplexImExpr : HUnaryExpr 
     {
         public HComplexImExpr(HExpr _op)
             : base(_op)
@@ -957,7 +961,7 @@ namespace NS_Hyperon
         }
     }
 
-    abstract class HCastToExpr : HUnaryExpr
+    public abstract class HCastToExpr : HUnaryExpr
     {
         public HCastToExpr(HExpr _op)
             : base(_op)
@@ -975,7 +979,7 @@ namespace NS_Hyperon
         protected HType _toType;
     }
 
-    class HCastToFloatExpr : HCastToExpr
+    public class HCastToFloatExpr : HCastToExpr
     {
         public HCastToFloatExpr(HExpr _op, HType _toType)
             : base(_op)
@@ -990,7 +994,7 @@ namespace NS_Hyperon
         }
     }
 
-    class HCastToIntExpr : HCastToExpr
+    public class HCastToIntExpr : HCastToExpr
     { 
         public HCastToIntExpr(HExpr _op, HType _toType)
             : base(_op)
@@ -1005,7 +1009,7 @@ namespace NS_Hyperon
         }
     }
 
-    class HCastToPointerExpr : HCastToExpr
+    public class HCastToPointerExpr : HCastToExpr
     {
         public HCastToPointerExpr(HExpr _op, HType _toType)
             : base(_op)
@@ -1025,7 +1029,7 @@ namespace NS_Hyperon
     #region Expressions / Binary expressions
 
     // binary expressions
-    abstract class HBinaryExpr : HExpr
+    public abstract class HBinaryExpr : HExpr
     {
         public HBinaryExpr(HExpr _left, HExpr _right)
         {
@@ -1055,7 +1059,7 @@ namespace NS_Hyperon
         protected HExpr _right;
     }
 
-    class HBinaryBitOpExpr : HBinaryExpr 
+    public class HBinaryBitOpExpr : HBinaryExpr 
     {
         public enum EOpKind
         {
@@ -1087,7 +1091,7 @@ namespace NS_Hyperon
         private EOpKind _kind;
     }
 
-    class HBinaryBoolOpExpr : HBinaryExpr
+    public class HBinaryBoolOpExpr : HBinaryExpr
     {
         public enum EOpKind
         {
@@ -1118,7 +1122,7 @@ namespace NS_Hyperon
         private EOpKind _kind;
     }
 
-    class HBinarySafeArithOpExpr : HBinaryExpr 
+    public class HBinarySafeArithOpExpr : HBinaryExpr 
     {
         public enum EOpKind
         {
@@ -1148,7 +1152,7 @@ namespace NS_Hyperon
         private EOpKind _kind;
     }
 
-    class HBinaryPointerArithOpExpr : HBinaryExpr
+    public class HBinaryPointerArithOpExpr : HBinaryExpr
     {
         public enum EOpKind
         {
@@ -1186,7 +1190,7 @@ namespace NS_Hyperon
     }
 
     // float division
-    class HFloatDivExpr : HBinaryExpr 
+    public class HFloatDivExpr : HBinaryExpr 
     {
         public HFloatDivExpr(HExpr _left, HExpr _right)
             : base(_left, _right)
@@ -1201,7 +1205,7 @@ namespace NS_Hyperon
     }
 
     // complex number division
-    class HComplexDivExpr : HBinaryExpr
+    public class HComplexDivExpr : HBinaryExpr
     {
         public HComplexDivExpr(HExpr _left, HExpr _right)
             : base(_left, _right)
@@ -1215,7 +1219,7 @@ namespace NS_Hyperon
         }
     }
 
-    class HIntDivOpExpr : HBinaryExpr
+    public class HIntDivOpExpr : HBinaryExpr
     {
         public enum EOpKind
         {
@@ -1250,7 +1254,7 @@ namespace NS_Hyperon
         private EOpKind _kind;
     }
 
-    class HCmpExpr : HBinaryExpr
+    public class HCmpExpr : HBinaryExpr
     {
         public enum EOpKind
         {
@@ -1296,7 +1300,7 @@ namespace NS_Hyperon
     #region Call expression
 
     // call expression
-    class HCallNonVoidFunExpr : HExpr
+    public class HCallNonVoidFunExpr : HExpr
     {
         public HCallNonVoidFunExpr(HExpr _toBeCalled, HExpr[] _params)
         {
@@ -1336,7 +1340,7 @@ namespace NS_Hyperon
         protected HExpr [] _params;
     }
 
-    class HCallVoidFunExpr : HCallNonVoidFunExpr, IInstruction
+    public class HCallVoidFunExpr : HCallNonVoidFunExpr, IInstruction
     {
         public HCallVoidFunExpr(HExpr _toBeCalled, HExpr[] _params)
             : base(_toBeCalled, _params)
@@ -1365,7 +1369,7 @@ namespace NS_Hyperon
 
     #region Memory expression
 
-    abstract class HMemExpr : HExpr
+    public abstract class HMemExpr : HExpr
     {
         public HMemDscr MemDscr
         {
@@ -1375,7 +1379,7 @@ namespace NS_Hyperon
         protected HMemDscr _memDscr;
     }
 
-    class HArrayRefExpr : HMemExpr 
+    public class HArrayRefExpr : HMemExpr 
     {
         public HArrayRefExpr(HExpr _array, HExpr _index, HMemDscr _memDscr)
         {
@@ -1394,11 +1398,16 @@ namespace NS_Hyperon
             get { return _index; }
         }
 
+        public override HType Type
+        {
+            get { return (_array.Type as HArrayType).BaseType; }
+        }
+
         private HExpr _array;
         private HExpr _index;
     }
 
-    class HStarExpr : HMemExpr 
+    public class HStarExpr : HMemExpr 
     {
         public HStarExpr(HExpr _pointer)
         {
@@ -1421,7 +1430,7 @@ namespace NS_Hyperon
         private HExpr _pointer;
     }
 
-    class HStructAccessExpr : HMemExpr 
+    public class HStructAccessExpr : HMemExpr 
     {
         public HStructAccessExpr(HExpr _struct, HExpr _field)
         {
@@ -1471,7 +1480,7 @@ namespace NS_Hyperon
             get { return _structType; }
         }
 
-        public HType Type
+        public override HType Type
         {
             get { return _type; }
         }
@@ -1497,7 +1506,7 @@ namespace NS_Hyperon
     #region SSA support
 
     // SSA_SUPPORT
-    class HReg : HExpr 
+    public class HReg : HExpr 
     {
         public HReg(HType _type)
         {
@@ -1547,9 +1556,14 @@ namespace NS_Hyperon
     }
 
     // SSA_SUPPORT
-    class HPhiExpr : HExpr, IInstruction
+    public class HPhiExpr : HExpr, IInstruction
     {
-        public HBasicBlock BasicBock
+        public HPhiExpr(HSsaDefExpr _res)
+        {
+            this._res = _res;
+        }
+
+        public HBasicBlock BasicBlock
         {
             get { return _basicBlock; }
             set { _basicBlock = value; }
@@ -1559,6 +1573,11 @@ namespace NS_Hyperon
         {
             get { return _res; }
             set { _res = value; }
+        }
+
+        public override HType Type
+        {
+            get { return _res.Type; }
         }
 
         public List<HSsaUseExpr> Uses
@@ -1579,12 +1598,12 @@ namespace NS_Hyperon
         }
 
         private HSsaDefExpr _res;
-        private List<HSsaUseExpr> _uses;
+        private List<HSsaUseExpr> _uses = new List<HSsaUseExpr>();
         private HBasicBlock _basicBlock;
     }
 
     // SSA_SUPPORT
-    class HSsaUseExpr : HExpr 
+    public class HSsaUseExpr : HExpr 
     {
         public HSsaUseExpr(HSsaDefExpr _def)
         {
@@ -1607,7 +1626,7 @@ namespace NS_Hyperon
     }
 
     // SSA_SUPPORT
-    class HSsaDefExpr : HExpr 
+    public class HSsaDefExpr : HExpr 
     {
         public HSsaDefExpr(HReg _reg)
         {
@@ -1632,7 +1651,7 @@ namespace NS_Hyperon
         }
 
         private HReg _reg;
-        private List<HSsaUseExpr> _uses;
+        private List<HSsaUseExpr> _uses = new List<HSsaUseExpr>();
     }
 
     #endregion
@@ -1640,7 +1659,7 @@ namespace NS_Hyperon
     #region Operand iterator
 
     // SSA_SUPPORT
-    class COperandEnumerators
+    public class COperandEnumerators
     {
         // обход всех операндов
         // обход всех операндов, которые являются HSsaUseExpr 
@@ -1653,14 +1672,14 @@ namespace NS_Hyperon
     #region Memory descriptor
 
     // Memory descriptor
-    enum EMemClass
+    public enum EMemClass
     {
         STATIC,
         STACK,
         HEAP
     }
 
-    class HMemDscr
+    public class HMemDscr
     {
         public HMemDscr(EMemClass _memClass, int _align, int _size)
         {
@@ -1693,10 +1712,10 @@ namespace NS_Hyperon
 
     #region Control flow statements
 
-    abstract class HQuasiBlockInstruction : HTree
+    public abstract class HQuasiBlockInstruction : HTree
     { }
 
-    class HLabeledGoto : HQuasiBlockInstruction
+    public class HLabeledGoto : HQuasiBlockInstruction
     {
         public HLabeledGoto(HLabel _target)
         {
@@ -1706,7 +1725,7 @@ namespace NS_Hyperon
         private HLabel _target;
     }
 
-    class HLabeledCondGoto : HQuasiBlockInstruction
+    public class HLabeledCondGoto : HQuasiBlockInstruction
     {
         public HLabeledCondGoto(HLabel _targetTrue, HLabel _targetFalse)
         {
@@ -1718,18 +1737,18 @@ namespace NS_Hyperon
         private HLabel _targetFalse;
     }
 
-    class HIf : HQuasiBlockInstruction { }
-    class HThen : HQuasiBlockInstruction { }
-    class HElse : HQuasiBlockInstruction { }
-    class HBegin : HQuasiBlockInstruction { }
-    class HEnd : HQuasiBlockInstruction { }
-    class HWhile : HQuasiBlockInstruction { }
-    class HDo : HQuasiBlockInstruction { }
-    class HFor : HQuasiBlockInstruction { }
-    class HSwitch : HQuasiBlockInstruction { }
-    class HCase : HQuasiBlockInstruction { }
+    public class HIf : HQuasiBlockInstruction { }
+    public class HThen : HQuasiBlockInstruction { }
+    public class HElse : HQuasiBlockInstruction { }
+    public class HBegin : HQuasiBlockInstruction { }
+    public class HEnd : HQuasiBlockInstruction { }
+    public class HWhile : HQuasiBlockInstruction { }
+    public class HDo : HQuasiBlockInstruction { }
+    public class HFor : HQuasiBlockInstruction { }
+    public class HSwitch : HQuasiBlockInstruction { }
+    public class HCase : HQuasiBlockInstruction { }
 
-    class HGoto : HTree, IInstruction
+    public class HGoto : HTree, IInstruction
     {
         public HGoto(HBasicBlock _target, HBasicBlock _bb)
         {
@@ -1746,13 +1765,14 @@ namespace NS_Hyperon
         public HBasicBlock BasicBlock
         {
             get { return _bb; }
+            set { _bb = value; }
         }
 
         private HBasicBlock _target;
         private HBasicBlock _bb;
     }
 
-    class HCondGoto : HTree, IInstruction
+    public class HCondGoto : HTree, IInstruction
     {
         public HCondGoto(HBasicBlock _targetTrue, HBasicBlock _targetFalse, HBasicBlock _bb)
         {
@@ -1775,6 +1795,7 @@ namespace NS_Hyperon
         public HBasicBlock BasicBlock
         {
             get { return _bb; }
+            set { _bb = value; }
         }
 
         private HBasicBlock _targetTrue;
@@ -1786,12 +1807,12 @@ namespace NS_Hyperon
 
     #region Control Flow Graph
 
-    interface IInstruction
+    public interface IInstruction
     {
         HBasicBlock BasicBlock { get; set; }
     }
 
-    class HBasicBlock
+    public class HBasicBlock
     {
         public HBasicBlock()
         {
@@ -1803,12 +1824,12 @@ namespace NS_Hyperon
             get { return _insts; }
         }
 
-        private List<IInstruction> _insts;
+        private List<IInstruction> _insts = new List<IInstruction>();
         private int _bbId;
         static private int _basicBlockCounter = 0;
     }
 
-    class HEdge
+    public class HEdge
     {
         public HEdge(bool _label)
         {
@@ -1834,7 +1855,7 @@ namespace NS_Hyperon
 
     #region Visitors
 
-    abstract class CTreeVisitor
+    public abstract class CTreeVisitor
     {
         #region Constants
 
@@ -1895,7 +1916,7 @@ namespace NS_Hyperon
         #endregion
     }
 
-    class CTypeCheckerVisitor : CTreeVisitor
+    public class CTypeCheckerVisitor : CTreeVisitor
     {
         // no checks in constants
 
@@ -2146,12 +2167,12 @@ namespace NS_Hyperon
             }
         }
 
-        static public bool _areTypesEquivalent(HBinaryExpr e)
+        static private bool _areTypesEquivalent(HBinaryExpr e)
         {
             return _areTypesEquivalent(e.Left.Type, e.Right.Type);
         }
 
-        static private override void _checkFunParams(HCallNonVoidFunExpr t)
+        static private void _checkFunParams(HCallNonVoidFunExpr t)
         {
             Debug.Assert(t.ToBeCalled.Type is HFunType);
             HFunType funType = t.ToBeCalled.Type as HFunType;

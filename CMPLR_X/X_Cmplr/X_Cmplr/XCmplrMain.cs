@@ -121,7 +121,7 @@ namespace NS_XCmplr
             Compiler cmplr = new Compiler(opts);
             cmplr.CompileIt();
 
-            if (opts.DelayAfterCompile)
+            if (COptions.DelayAfterCompile)
             {
                 Console.WriteLine("Delay after compilation. Press any key");
                 Console.ReadLine();
