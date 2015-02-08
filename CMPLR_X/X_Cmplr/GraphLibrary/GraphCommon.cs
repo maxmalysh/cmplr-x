@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace NM_GraphCommon
 {
@@ -15,6 +17,9 @@ namespace NM_GraphCommon
         {
             this.props = props;
             this.reference = reference;
+            System.Type type = typeof(VProperties);
+            PropertyInfo pi = type.GetProperty("VDescr");
+            pi.SetValue(props, this);
         }
     }
 

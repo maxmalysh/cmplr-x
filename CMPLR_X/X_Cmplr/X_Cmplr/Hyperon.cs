@@ -87,13 +87,6 @@ namespace NS_Hyperon
 
     public class HVoidType : HType
     {
-        static public void Init()
-        {
-            Debug.Assert(!_done);
-            _done = true;
-            _voidType = new HVoidType();
-        }
-
         static public HVoidType VoidType
         { 
             get 
@@ -106,29 +99,11 @@ namespace NS_Hyperon
             : base(0)
         { }
 
-        static private bool _done = false;
-        static private HVoidType _voidType = null;
+        static private HVoidType _voidType = new HVoidType();
     }
 
     public class HIntegerType : HType 
     {
-        static public void Init()
-        {
-            Debug.Assert(!_done);
-            _done = true;
-
-            _sInt8 = new HIntegerType(true, 1);
-            _uInt8 = new HIntegerType(false, 1);
-            _sInt16 = new HIntegerType(true, 2);
-            _uInt16 = new HIntegerType(false, 2);
-            _sInt32 = new HIntegerType(true, 4);
-            _uInt32 = new HIntegerType(false, 4);
-            _sInt64 = new HIntegerType(true, 8);
-            _uInt64 = new HIntegerType(false, 8);
-            _sInt128 = new HIntegerType(true, 16);
-            _uInt128 = new HIntegerType(false, 16);
-        }
-
         public bool IsSigned
         {
             get { return _isSigned; }
@@ -197,17 +172,16 @@ namespace NS_Hyperon
 
         private bool _isSigned;
 
-        static private bool _done = false;
-        static private HIntegerType _sInt8 = null;
-        static private HIntegerType _uInt8 = null;
-        static private HIntegerType _sInt16 = null;
-        static private HIntegerType _uInt16 = null;
-        static private HIntegerType _sInt32 = null;
-        static private HIntegerType _uInt32 = null;
-        static private HIntegerType _sInt64 = null;
-        static private HIntegerType _uInt64 = null;
-        static private HIntegerType _sInt128 = null;
-        static private HIntegerType _uInt128 = null;
+        static private HIntegerType _sInt8 = new HIntegerType(true, 1);
+        static private HIntegerType _uInt8 = new HIntegerType(false, 1);
+        static private HIntegerType _sInt16 = new HIntegerType(true, 2);
+        static private HIntegerType _uInt16 = new HIntegerType(false, 2);
+        static private HIntegerType _sInt32 = new HIntegerType(true, 4);
+        static private HIntegerType _uInt32 = new HIntegerType(false, 4);
+        static private HIntegerType _sInt64 = new HIntegerType(true, 8);
+        static private HIntegerType _uInt64 = new HIntegerType(false, 8);
+        static private HIntegerType _sInt128 = new HIntegerType(true, 16);
+        static private HIntegerType _uInt128 = new HIntegerType(false, 16);
     }
 
     public class HFloatType : HType 
@@ -231,20 +205,9 @@ namespace NS_Hyperon
             : base(_size)
         { }
 
-        static public void Init()
-        {
-            Debug.Assert(!_done);
-            _done = true;
-
-            _float32 = new HFloatType(4);
-            _float64 = new HFloatType(8);
-            _float80 = new HFloatType(10);
-        }
-
-        static private bool _done = false;
-        static private HFloatType _float32;
-        static private HFloatType _float64;
-        static private HFloatType _float80;
+        static private HFloatType _float32 = new HFloatType(4);
+        static private HFloatType _float64 = new HFloatType(8);
+        static private HFloatType _float80 = new HFloatType(10);
     }
 
     public class HStructType : HType 
@@ -299,16 +262,6 @@ namespace NS_Hyperon
 
     public class HComplexType : HType 
     {
-        static public void Init()
-        {
-            Debug.Assert(!_done);
-            _done = true;
-
-            _complexType32 = new HComplexType(HFloatType.Float32);
-            _complexType64 = new HComplexType(HFloatType.Float64);
-            _complexType80 = new HComplexType(HFloatType.Float80);
-        }
-
         static public HComplexType Complex32
         {
             get { return _complexType32; }
@@ -355,20 +308,14 @@ namespace NS_Hyperon
         }
 
         private HType _baseType;
-        static private bool _done = false;
-        static private HComplexType _complexType32 = null;
-        static private HComplexType _complexType64 = null;
-        static private HComplexType _complexType80 = null;
+
+        static private HComplexType _complexType32 = new HComplexType(HFloatType.Float32);
+        static private HComplexType _complexType64 = new HComplexType(HFloatType.Float64);
+        static private HComplexType _complexType80 = new HComplexType(HFloatType.Float80);
     }
 
     public class HBooleanType : HType 
     {
-        static public void Init()
-        {
-            Debug.Assert(!_done);
-            _done = true;
-        }
-
         static public HBooleanType Boolean
         {
             get { return _booleanType; }
@@ -378,8 +325,7 @@ namespace NS_Hyperon
             : base(CArch.BooleanSize)
         { }
 
-        static private bool _done = false;
-        static private HBooleanType _booleanType = null;
+        static private HBooleanType _booleanType = new HBooleanType();
     }
 
     public class HPointerType : HType
@@ -461,19 +407,6 @@ namespace NS_Hyperon
 
     #endregion
 
-    // label
-    public class HLabel : HTree 
-    {
-        public string Name
-        {
-            get 
-            {
-                // name table
-                return "";
-            }
-        }
-    }
-
     #region Expressions
 
     // expressions
@@ -488,7 +421,7 @@ namespace NS_Hyperon
     /// <summary>
     /// В данном 
     /// </summary>
-    public abstract class HNmo : HExpr
+    public abstract class HNmoExpr : HExpr
     {
         public override HType Type
         {
@@ -506,9 +439,9 @@ namespace NS_Hyperon
         protected HMemDscr _memDscr;
     }
 
-    public class HVarNmo : HNmo
+    public class HVarNmoExpr : HNmoExpr
     {
-        public HVarNmo(HType _type, HMemDscr _memDscr)
+        public HVarNmoExpr(HType _type, HMemDscr _memDscr)
         {
             Debug.Assert(!(_type is HFunType));
 
@@ -527,9 +460,9 @@ namespace NS_Hyperon
         }
     }
 
-    public class HParamNmo : HNmo
+    public class HParamNmoExpr : HNmoExpr
     {
-        public HParamNmo(HType _type, HMemDscr _memDscr, HFunNmo _funNmo)
+        public HParamNmoExpr(HType _type, HMemDscr _memDscr, HFunNmoExpr _funNmo)
         {
             Debug.Assert(!(_type is HFunType));
 
@@ -538,7 +471,7 @@ namespace NS_Hyperon
             this._funNmo = _funNmo;
         }
 
-        public HFunNmo FunNmo
+        public HFunNmoExpr FunNmo
         {
             get { return _funNmo; }
         }
@@ -548,12 +481,12 @@ namespace NS_Hyperon
             get { throw new NotImplementedException(); }
         }
 
-        private HFunNmo _funNmo;
+        private HFunNmoExpr _funNmo;
     }
 
-    public class HFunNmo : HNmo
+    public class HFunNmoExpr : HNmoExpr
     {
-        public HFunNmo(HFunType _funType)
+        public HFunNmoExpr(HFunType _funType)
         {
             this._type = _funType;
         }
@@ -1506,24 +1439,24 @@ namespace NS_Hyperon
     #region SSA support
 
     // SSA_SUPPORT
-    public class HReg : HExpr 
+    public class HRegExpr : HExpr
     {
-        public HReg(HType _type)
+        public HRegExpr(HType _type)
         {
-            Debug.Assert(!(_type is HFunType));
-
             this._type = _type;
             this._index = _tempCounter++;
-            this._version = 0;
         }
 
-        static public HReg CreateNewVersion(HReg _original, int _version)
+        public HRegExpr(HSsaDefExpr _def)
         {
-            HReg _reg = new HReg();
-            _reg._type = _original._type;
-            _reg._index = _original._index;
-            _reg._version = _version;
-            return _reg;
+            _type = _def._type;
+            _index = _def._index;
+        }
+
+        public HRegExpr(HSsaUseExpr _use)
+        {         
+            _type = _use._type;
+            _index = _use._index;
         }
 
         public override HType Type
@@ -1536,31 +1469,90 @@ namespace NS_Hyperon
             get { return _index; }
         }
 
+        protected HRegExpr(HType _type, int _index)
+        {
+            this._type = _type;
+            this._index = _index;
+        }
+
+        protected HType _type;
+        protected int _index;
+        static private int _tempCounter = 0;
+    }
+
+    // SSA_SUPPORT
+    public class HSsaDefExpr : HRegExpr
+    {
+        public HSsaDefExpr(HRegExpr _reg)
+            : base(_reg.Type, _reg.Index)
+        {
+            _version = HSsaDefExpr._versionCounter++;
+        }
+
+        public List<HSsaUseExpr> Uses
+        {
+            get { return _uses; }
+        }
+
         public int Version
         {
             get { return _version; }
         }
 
-        public bool IsVersioned
+        private List<HSsaUseExpr> _uses = new List<HSsaUseExpr>();
+        private int _version;
+        static private int _versionCounter = 0;
+    }
+
+    // SSA_SUPPORT
+    public class HSsaUseExpr : HRegExpr
+    {
+        public HSsaUseExpr(HSsaDefExpr _def)
+            : base(_def.Type, _def.Index)
         {
-            get { return (_version != 0); }
+            this._def = _def;
+            _def.Uses.Add(this);
         }
 
-        private HReg()
-        { }
+        public HSsaDefExpr Def
+        {
+            get { return _def; }
+        }
 
-        private HType _type;
-        private int _index;
-        private int _version;
-        static private int _tempCounter = 0;
+        private HSsaDefExpr _def;
+    }
+
+    public class COneOneMap<TKey, TValue>
+    {
+        public TValue this[TKey _key]
+        {
+            get { /* to be impleneted */ return default(TValue); }
+            set { /* to be impleneted */ }
+        }
+
+        public TKey this[TValue _value]
+        {
+            get { /* to be impleneted */ return default(TKey); }
+            set { /* to be impleneted */ }
+        }
+
+        public void Delete(TKey _key)
+        {
+            /* to be impleneted */
+        }
+
+        public void Delete(TValue _value)
+        {
+            /* to be impleneted */
+        }
     }
 
     // SSA_SUPPORT
     public class HPhiExpr : HExpr, IInstruction
     {
-        public HPhiExpr(HSsaDefExpr _res)
+        public HPhiExpr(HRegExpr _reg)
         {
-            this._res = _res;
+            this._reg = _reg;
         }
 
         public HBasicBlock BasicBlock
@@ -1580,78 +1572,15 @@ namespace NS_Hyperon
             get { return _res.Type; }
         }
 
-        public List<HSsaUseExpr> Uses
+        public COneOneMap<HEdge, HSsaUseExpr> Uses
         {
             get { return _uses; }
         }
 
-        public HSsaUseExpr GetUseByEdge(HEdge e)
-        {
-            // ...
-            return null;
-        }
-
-        public HEdge GetEdgeByUse(HSsaUseExpr use)
-        {
-            // ...
-            return null;
-        }
-
-        private HSsaDefExpr _res;
-        private List<HSsaUseExpr> _uses = new List<HSsaUseExpr>();
-        private HBasicBlock _basicBlock;
-    }
-
-    // SSA_SUPPORT
-    public class HSsaUseExpr : HExpr 
-    {
-        public HSsaUseExpr(HSsaDefExpr _def)
-        {
-            Debug.Assert(_def.Reg.IsVersioned);
-
-            this._def = _def;
-        }
-
-        public HReg Reg
-        {
-            get { return _def.Reg; }
-        }
-
-        public override HType Type
-        {
-            get { return _def.Type; }
-        }
-
-        private HSsaDefExpr _def;
-    }
-
-    // SSA_SUPPORT
-    public class HSsaDefExpr : HExpr 
-    {
-        public HSsaDefExpr(HReg _reg)
-        {
-            Debug.Assert(_reg.IsVersioned);
-
-            this._reg = _reg;
-        }
-
-        public HReg Reg
-        {
-            get { return _reg; }
-        }
-
-        public List<HSsaUseExpr> Uses
-        {
-            get { return _uses; }
-        }
-
-        public override HType Type
-        {
-            get { return _reg.Type; }
-        }
-
-        private HReg _reg;
-        private List<HSsaUseExpr> _uses = new List<HSsaUseExpr>();
+        private HSsaDefExpr _res = null;
+        private COneOneMap<HEdge, HSsaUseExpr> _uses = new COneOneMap<HEdge, HSsaUseExpr>();
+        private HRegExpr _reg;
+        private HBasicBlock _basicBlock = null;
     }
 
     #endregion
@@ -1659,12 +1588,36 @@ namespace NS_Hyperon
     #region Operand iterator
 
     // SSA_SUPPORT
-    public class COperandEnumerators
+    public class COperandCollection
     {
         // обход всех операндов
+        static public IEnumerable<HExpr> GetAll(HExpr _e) 
+        {
+            /* to be impleneted */
+            return null;
+        }
+        
         // обход всех операндов, которые являются HSsaUseExpr 
+        static public IEnumerable<HSsaUseExpr> GetSsaUses(HExpr _e)
+        {
+            /* to be impleneted */
+            return null;
+        }
+
         // обход всех операндов, которые являются HReg
+        static public IEnumerable<HRegExpr> GetRegs(HExpr _e)
+        {
+            /* to be impleneted */
+            return null;
+        }
+
         // обход всех операндов, которые являются НNmoExpr
+        static public IEnumerable<HNmoExpr> GetNmos(HExpr _e)
+        {
+            /* to be impleneted */
+            return null;
+        }
+
     }
 
     #endregion
@@ -1714,6 +1667,19 @@ namespace NS_Hyperon
 
     public abstract class HQuasiBlockInstruction : HTree
     { }
+
+    // label
+    public class HLabel : HQuasiBlockInstruction
+    {
+        public string Name
+        {
+            get
+            {
+                // name table
+                return "";
+            }
+        }
+    }
 
     public class HLabeledGoto : HQuasiBlockInstruction
     {
@@ -1824,6 +1790,14 @@ namespace NS_Hyperon
             get { return _insts; }
         }
 
+        public CVDescr<HBasicBlock> VDescr
+        {
+            get { return _vDescr; }
+            set { _vDescr = value; }
+        }
+
+
+        private CVDescr<HBasicBlock> _vDescr;
         private List<IInstruction> _insts = new List<IInstruction>();
         private int _bbId;
         static private int _basicBlockCounter = 0;
@@ -1844,7 +1818,7 @@ namespace NS_Hyperon
         private bool _label;
     }
 
-    public class HCfg<HEdge, HBasicBlock> : CDirGraph<HEdge, HBasicBlock>
+    public class HCfg : CDirGraph<HEdge, HBasicBlock>
     {
         public HCfg()
             : base(new CDirectedAdjListStorage<HEdge, HBasicBlock>())
