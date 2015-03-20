@@ -1,0 +1,65 @@
+
+// language core
+
+<translation_item>		::= { <section> | <data_structure> }
+
+
+
+
+// aux items
+
+<data_definition>		::= [ <id> ] <data_specificator> [ "(" <int_value> ")" ] [ <align> ] ( "?" | <value_list> ) "\n"
+
+<data_specificator>		::= .d8 | .d16 | .d32 | .d64 | .d128 | .struct <id>
+
+<align>				::= .align2 | .align4 | .align8 | .align16 | .align32 | .align64 | .align128
+
+<value_list>			::= <value> { "," <value> }
+
+<value>				::= <scalar_value> | <struct_value>
+
+<scalar_value>			::= <int_value> | <float_value>
+
+<struct_value>			::= "<" <scalar_value> { "," <scalar_value> }  ">"
+
+
+
+
+// sections
+
+<section> 			::= <data_section> | <code_section>
+
+<data_section>			::= .data <id> <align> "\n" { <data_definition> } .ends "\n"
+
+<code_section>			::= .code <id> <align> "\n" { <procedure> | <insruction> | <data_definition> } .ends "\n"
+
+<procedure>			::= .proc <id> <align> "\n" { <insruction> | <data_definition> } .endp "\n"
+
+
+
+
+// data structure
+
+<data_structure>		::= .struct <id> "\n" { <data_definition> } .ends "\n"
+
+
+
+
+
+
+// macro preprocessor
+
+<macro_command>				::= <include> | <macro_definition>
+
+<include>				::= #include "'" <path_to_file> "'"
+
+<macro_definition>			::= <single_line_macro_definition> | <multiline_line_macro_definition>
+
+<single_line_macro_definition>		::= #define <macro_id> <symbol_sequene> "\n"
+
+<multiline_line_macro_definition>	::= 
+
+
+
+
+
